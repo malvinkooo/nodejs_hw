@@ -1,14 +1,5 @@
 function isExtMatched(extArr, currExt) {
-    let result = !extArr.length;
-
-    extArr.forEach(element => {
-        if (element === currExt) {
-            result = true;
-            return result;
-        }
-    });
-
-    return result;
+    return extArr.includes(currExt);
 }
 
 module.exports = {

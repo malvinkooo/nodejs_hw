@@ -15,15 +15,14 @@ function filterFiles (currPath, filters, deep) {
         return result;
     }
 
-    readdirSync(currPath).forEach(element => {
-        const elementPath = path.join(currPath, element);
-        const stats = statSync(elementPath);
+    readdirSync(currPath, {withFileTypes: true}).forEach(element => {
+        const elementPath = path.join(currPath, element.name);
 
-        if(stats.isDirectory()) {
-            result = [...result, ...filterFiles(elementPath, filters, deep-1)];
+        if(element.isDirectory()) {
+            result.push(...filterFiles(elementPath, filters, deep-1));
         } else {
-            if(isExtMatched(filters, extname(element))) {
-                result[result.length] = element;
+            if(isExtMatched(filters, extname(element.name))) {
+                result.push(element.name);
             }
         }
     });
