@@ -1,0 +1,21 @@
+{
+    "name": "hw_1",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "start": "cross-env EXT=[.json] node app.js --colors=[blue,green] --deep=1 --search=eslint --path=C:\\Users\\Elena\\Desktop\\hw_1",
+        "dev": "cross-env EXT=[.json,.js] nodemon app.js --colors=[magenta,blue,yellow] --deep=1 --path=C:\\Users\\Elena\\Desktop\\hw_1",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Elena Romanova",
+    "license": "ISC",
+    "dependencies": {
+        "chalk": "^3.0.0",
+        "cross-env": "^7.0.0",
+        "minimist": "^1.2.2"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.2"
+    }
+}
