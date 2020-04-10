@@ -31,17 +31,17 @@ class Finder extends EventEmitter {
         this._setTimer();
         this._deep = (this._deep === 0) ? -1 : this._deep;
 
-        const result = await this._parseDir(this._path);
+        const result = await this._parseDir(this._path, this._deep);
 
         this.emit('finished', result);
         clearTimeout(this._timer);
     }
 
-    async _parseDir(currPath) {
+    async _parseDir(currPath, deep) {
         let result = [];
         let items;
 
-        if (this._deep === 0) {
+        if (deep === 0) {
             return result;
         }
 
@@ -60,7 +60,7 @@ class Finder extends EventEmitter {
 
             if (element.isDirectory()) {
                 this._dirProcessCount++;
-                const res = await this._parseDir(elementPath, this._extList, this._deep - 1)
+                const res = await this._parseDir(elementPath, deep - 1)
                 result.push(...res);
             } else if (element.isFile()) {
                 this._fileProcessCount++;
