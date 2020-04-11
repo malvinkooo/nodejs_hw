@@ -18,8 +18,7 @@ class Finder extends EventEmitter {
 
         this._interval = 2000;
         this._timer;
-
-        this.once('parse', this.parse);
+        
         this.on('file', this._setTimer);
 
         setTimeout(() => {
