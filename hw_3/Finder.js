@@ -1,12 +1,11 @@
 const EventEmitter = require('events');
-const { readdir } = require('fs');
+const { readdir } = require('fs').promises;
 const { extname } = require('path');
 const path = require("path");
 const chalk = require("chalk");
 
 const { createReadStream, createWriteStream } = require("fs");
 const FileType = require('file-type');
-// const { isExtMatched } = require('./functions/functions.js');
 
 class Finder extends EventEmitter {
     constructor(deep, fileParams) {
@@ -46,7 +45,11 @@ class Finder extends EventEmitter {
 
     async _parseDir(currPath, deep) {
         let result = [];
-        let items;
+        let items = [];
+
+        const ws = createWriteStream(`./log/${this._logFileName}.txt`, {
+            flags: "a"
+        });
 
         if (deep === 0) {
             return result;
@@ -83,7 +86,7 @@ class Finder extends EventEmitter {
                             const findResult = await this._findInFile(elementPath, this._search);
                             if(findResult) {
                                 const { beforeSubstr, afterSubstr } = findResult;
-                                await this._writeLogFile(beforeSubstr, afterSubstr);
+                                ws.write(`${beforeSubstr}${afterSubstr}`);
                             }
                         }
                     }
@@ -91,42 +94,39 @@ class Finder extends EventEmitter {
             }
         }
 
+        ws.end();
+
         return result;
     }
     
     _findInFile(elementPath, search) {
         return new Promise((resolve, reject) => {
-            let tmp = "", prevChunkLength;
+            let tmp = "", prevChunkLength = 0;
             const rs = createReadStream(elementPath, {
                 highWaterMark: 20,
                 encoding: "utf-8",
             });
 
             rs.on("data", chunk => {
+                tmp += chunk;
 
-                if(!tmp) {
-                    tmp += chunk;
-                    prevChunkLength = chunk.length;
+                const indexSubstr = tmp.indexOf(this._search);
+                if(indexSubstr != -1) {
+                    const beforeSubstr = tmp.substr(0, indexSubstr-1);
+                    const afterSubstr = tmp.substr(indexSubstr+this._search.length, 20);
+
+                    rs.destroy();
+
+                    resolve({
+                        beforeSubstr,
+                        afterSubstr,
+                    });
                 } else {
-                    tmp += chunk;
-
-                    const indexSubstr = tmp.indexOf(this._search);
-                    if(indexSubstr != -1) {
-
-                        const beforeSubstr = tmp.substr(0, indexSubstr-1);
-                        const afterSubstr = tmp.substr(indexSubstr+this._search.length, 20);
-
-                        rs.destroy();
-
-                        resolve({
-                            beforeSubstr,
-                            afterSubstr,
-                        });
-                    } else {
-                        tmp = tmp.slice(prevChunkLength);
-                        prevChunkLength = chunk.length;
-                    }
+                    tmp = tmp.slice(prevChunkLength);
+                    prevChunkLength = chunk.length;
                 }
+
+                prevChunkLength = chunk.length;
             });
 
             rs.on("close", () => {
@@ -136,15 +136,7 @@ class Finder extends EventEmitter {
     }
 
     _readDir(path, options) {
-        return new Promise((resolve, reject) => {
-            readdir(path, options, (err, res) => {
-                if (err) {
-                    return reject(`Error reading the directory: ${path}`);
-                }
-
-                resolve(res);
-            });
-        });
+        return readdir(path, options);
     }
 
     _setTimer() {
@@ -158,22 +150,6 @@ class Finder extends EventEmitter {
                 files: this._fileProcessCount,
             });
         }, this._interval);
-    }
-
-    _writeLogFile(beforeSubstr, afterSubstr) {
-        return new Promise((resolve, reject) => {
-            const ws = createWriteStream(`./log/${this._logFileName}.txt`, {
-                flags: "a"
-            });
-
-            ws.on("finish", ()=> {
-                resolve();
-            });
-
-            ws.write(`${beforeSubstr}${afterSubstr}`);
-
-            ws.end();
-        });
     }
 
     _isFileTypeMatched(ft, file) {
@@ -201,7 +177,7 @@ class Finder extends EventEmitter {
                 highWaterMark: 4100,
             });
 
-            rs.on("data", (chunk) => {
+            rs.once("data", (chunk) => {
                 FileType.fromBuffer(chunk).then((ft) => {
                     resolve({
                         isFileTypeMatched: this._isFileTypeMatched(ft, element),
@@ -211,7 +187,7 @@ class Finder extends EventEmitter {
                     reject(e);
                 });
 
-                rs.close();
+                rs.destroy();
             });
 
             rs.on("close", error => {
