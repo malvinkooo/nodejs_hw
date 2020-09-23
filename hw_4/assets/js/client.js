@@ -1,7 +1,7 @@
 const ul = document.getElementById("list");
     
 async function getMessagesList(sort, skip, limit) {
-    const res = await fetch("/messages?" + "sort=" + sort + "&skip=" + skip + "&limit=" + limit);
+    const res = await fetch(`/messages?sort=${sort}&skip=${skip}&limit=${limit}`);
     const data = await res.json();
 
     return data;

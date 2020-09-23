@@ -18,7 +18,6 @@ const allowed_content_types = [
 ];
 
 exports.getMessages = (req, res, searchParams) => {
-    console.log(searchParams);
     const sort = searchParams.get("sort");
     const skip = Number.parseInt(searchParams.get("skip"));
     const limit = Number.parseInt(searchParams.get("limit"));
