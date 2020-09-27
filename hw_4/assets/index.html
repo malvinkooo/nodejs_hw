@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Hello world</h1>
+    <img src='/img/01.jpg'>
+    <div style="margin-bottom: 20px;">
+        <label for="sort">Sort</label>
+        <select id="sort">
+            <option value="asc">ASC</option>
+            <option value="desc">DESC</option>
+        </select>
+        <label for="skip">Skip</label>
+        <select id="skip">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+        </select>
+        <label for="limit">Limit</label>
+        <select id="limit">
+            <option value="all">all</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+        </select>
+        <div style="margin-top: 15px;">
+            <button id="reloadMessages">Перезагрузить сообщения</button>
+        </div>
+    </div>
+    
+    <form id="addMessageForm">
+        <input id="text" value="Some new text">
+        <button type="submit">Add message</button>
+    </form>
+    <ul id="list"></ul>
+    <script src="/js/client.js"></script>
+</body>
+</html>
