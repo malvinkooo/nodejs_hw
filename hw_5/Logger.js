@@ -28,7 +28,12 @@ class Logger {
         reqTimeTracker.stop();
         const ws = createWriteStream("./log/files.txt", { flags:'a'});
 
-        ws.write(`URL: ${request.url},\r\n Start time: ${reqTimeTracker.getStartTime()},\r\n End time: ${reqTimeTracker.getEndTime()},\r\n Time spend: ${reqTimeTracker.getSpendTime()}s,\r\n Status: ${response.statusCode}\r\n,\r\n User agent: ${request.headers['user-agent']}`);
+        ws.write(`URL: ${request.url},\r\n ` +
+        `Start time: ${reqTimeTracker.getStartTime()},\r\n ` +
+        `End time: ${reqTimeTracker.getEndTime()},\r\n ` +
+        `Time spend: ${reqTimeTracker.getSpendTime()}s,\r\n ` +
+        `Status: ${response.statusCode}\r\n,\r\n ` +
+        `User agent: ${request.headers['user-agent']}`);
 
         ws.end();
     }

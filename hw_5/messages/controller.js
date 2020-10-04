@@ -1,52 +1,36 @@
 exports.getMessages = (req, res, next) => {
-    let { sort, sortValue, limit, skip } = req.query;
+    let { sort = "date", sortValue = "asc", limit = 10, skip = 0 } = req.query;
     let messages = [...res.app.locals.messages];
 
-    switch (sort) {
-        case "text":
-            messages.sort((a, b) => {
-                if (a.text > b.text) return 1;
-                if (a.text < b.text) return -1;
-                if (a.text === b.text) return 0;
-            });
-            break;
+    const dateCmp = (a,b) => new Date(a) - new Date(b);
+    const intCmp = (a,b) => a - b;
+    const stringCmp = (a,b) => {
+        if (a > b) return 1;
+        if (a < b) return -1;
+        if (a === b) return 0;
+    };
 
-        case "id":
-            messages.sort((a, b) => a.id - b.id);
-            break;
+    const fieldToCmpFunction = {
+        "text": stringCmp,
+        "date": dateCmp,
+        "id": intCmp
+    };
 
-        case "date":
-            messages.sort((a, b) => {
-                if (a.date > b.date) return 1;
-                if (a.date < b.date) return -1;
-                if (a.date === b.date) return 0;
-            });
-            break;
-
-        default:
-            messages.sort((a, b) => {
-                if (a.date > b.date) return 1;
-                if (a.date < b.date) return -1;
-                if (a.date === b.date) return 0;
-            });
+    const cmpFunc = fieldToCmpFunction[sort];
+    if (cmpFunc) {
+        messages.sort((a, b) => cmpFunc(a[sort], b[sort]));
     }
 
-    switch(sortValue) {
-        case "asc":
-            //восходящий
-            break;
-        
-        default:
-            messages.reverse();
-            break;
+
+    if(sortValue !== "asc") {
+        messages.reverse();
     }
 
-    limit = !Number.isNaN(Number.parseInt(limit)) ? Number.parseInt(limit) : 10;
-    messages = messages.slice(0, limit);
-
-    if(!Number.isNaN(Number.parseInt(skip))) {
-        messages = messages.slice(Number.parseInt(skip), messages.length);
+    if(limit === "all") {
+        limit = messages.length;
     }
+
+    messages = messages.slice(skip, limit + skip);
 
     res.send(messages);
 }

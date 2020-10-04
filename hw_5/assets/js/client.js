@@ -144,8 +144,11 @@ function onSaveEditMessageFormBtnClick(e) {
 }
 
 /* ================== */
-
-getMessagesList().then(data => {
+const sort = document.getElementById("sort").value || "date";
+const sortValue = document.getElementById("sortValue").value || "asc";
+const skip = document.getElementById("skip").value || 10;
+const limit = document.getElementById("limit").value || 0;
+getMessagesList(sort, skip, limit, sortValue).then(data => {
     renderMessagesList(data);
 });
 
@@ -192,10 +195,10 @@ ul.addEventListener("click", (e) => {
 
 const reloadMessagesBtn = document.getElementById("reloadMessages");
 reloadMessagesBtn.addEventListener("click", (e) => {
-    const sort = document.getElementById("sort").value;
-    const sortValue = document.getElementById("sortValue").value;
-    const skip = document.getElementById("skip").value;
-    const limit = document.getElementById("limit").value;
+    const sort = document.getElementById("sort").value || "date";
+    const sortValue = document.getElementById("sortValue").value || "asc";
+    const skip = document.getElementById("skip").value || 10;
+    const limit = document.getElementById("limit").value || 0;
 
     getMessagesList(sort, skip, limit, sortValue).then(data => {
         renderMessagesList(data);
