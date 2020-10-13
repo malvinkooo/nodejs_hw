@@ -1,0 +1,68 @@
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>Сообщения</h1>
+
+    <form method="GET" action="/">
+        <p>
+            <label for="sort">Сортировка по:</label>
+            <select name="sort" id="sort">
+                <option value="date">дате</option>
+                <option value="text">тексту</option>
+                <option value="id">идентификатору</option>
+            </select>
+        </p>
+        <p>
+            <label for="sortValue">Сортировка значений по:</label>
+            <select name="sortValue" id="sortValue">
+                <option value="asc">возрастанию</option>
+                <option value="desc">убыванию</option>
+            </select>
+        </p>
+
+        <p>
+            <label for="limit">Лимит сообщений:</label>
+            <select name="limit" id="limit">
+                <option value="all">Показать все</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
+        </p>
+
+        <p>
+            <label for="skip">Пропустить:</label>
+            <select name="skip" id="skip">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
+        </p>
+
+        <button type="submit">Перезагрузить сообщения</button>
+    </form>
+
+    <form method="POST" action="/messages" enctype="application/x-www-form-urlencoded">
+        <input type="text" name="text">
+        <button type="submit">Добавить новое сообщение</button>
+    </form>
+
+    <ul class="messageList">
+        {% for msg in messages %}
+            <li
+                data-id="{{ msg.id }}"
+                data-date="{{ msg.date }}"
+                data-text="{{ msg.text }}"
+            >
+                <p>{{ msg.text }}</p>
+                <p>{{ msg.date }}</p>
+                <button type="button" class="editMessage">Редактировать</button>
+                <button type="button" class="deleteMessage">Удалить</button>
+            </li>
+        {% endfor %}
+    </ul>
+
+<script src="/assets/js/main.js"></script>
+</body>
+</html>
